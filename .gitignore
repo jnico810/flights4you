@@ -3,3 +3,6 @@ node_modules
 
 # OS X View structure
 .DS_Store
+
+
+bundle.js.map
