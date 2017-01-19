@@ -21535,12 +21535,15 @@
 	
 	    var _this = _possibleConstructorReturn(this, (Root.__proto__ || Object.getPrototypeOf(Root)).call(this, props));
 	
-	    _this.state = { originCode: "", destinationCode: "", searchMessage: "" };
+	    var rightNow = new Date();
+	    var formattedDate = rightNow.toISOString().slice(0, 10);
+	    _this.state = { originCode: "", destinationCode: "", searchMessage: "", searchDate: formattedDate };
 	    _this.getAirportCode = _this.getAirportCode.bind(_this);
 	    _this.getLocation = _this.getLocation.bind(_this);
 	    _this.updateOrigin = _this.updateOrigin.bind(_this);
 	    _this.updateDestination = _this.updateDestination.bind(_this);
 	    _this.handleSubmit = _this.handleSubmit.bind(_this);
+	    _this.updateDate = _this.updateDate.bind(_this);
 	    return _this;
 	  }
 	
@@ -21577,6 +21580,12 @@
 	      this.setState({ destinationCode: e.currentTarget.value });
 	    }
 	  }, {
+	    key: 'updateDate',
+	    value: function updateDate(e) {
+	      e.preventDefault();
+	      this.setState({ searchDate: e.currentTarget.value });
+	    }
+	  }, {
 	    key: 'handleSubmit',
 	    value: function handleSubmit(e) {
 	      var _this3 = this;
@@ -21584,18 +21593,20 @@
 	      e.preventDefault();
 	      _jquery2.default.ajax({
 	        method: "GET",
-	        url: '/api/flights?origin=' + this.state.originCode + '&dest=' + this.state.destinationCode,
+	        url: '/api/flights?origin=' + this.state.originCode + '&dest=' + this.state.destinationCode + '&date=' + this.state.searchDate,
 	        success: function success(response) {
-	          _this3.setState({ originCode: response.IATA, searchMessage: "Your closest airport has been found!" });
+	          console.log('good');
 	        },
 	        error: function error(err) {
-	          this.setState({ searchMessage: "There was an error finding your closest airport!" });
+	          console.log(err);
+	          _this3.setState({ searchMessage: err.responseText });
 	        }
 	      });
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
+	      console.log(this.state);
 	      return _react2.default.createElement(
 	        'div',
 	        null,
@@ -21624,6 +21635,7 @@
 	            'Destination:'
 	          ),
 	          _react2.default.createElement('input', { name: 'destination', id: 'destination', onChange: this.updateDestination }),
+	          _react2.default.createElement('input', { type: 'date', onChange: this.updateDate, value: this.state.searchDate }),
 	          _react2.default.createElement(
 	            'button',
 	            { type: 'submit' },

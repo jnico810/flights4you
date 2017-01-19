@@ -5,12 +5,15 @@ class Root extends React.Component {
 
   constructor(props){
     super(props);
-    this.state = {originCode:"", destinationCode:"", searchMessage:""};
+    const rightNow = new Date();
+    const formattedDate = rightNow.toISOString().slice(0,10);
+    this.state = {originCode:"", destinationCode:"", searchMessage:"", searchDate:formattedDate};
     this.getAirportCode = this.getAirportCode.bind(this);
     this.getLocation = this.getLocation.bind(this);
     this.updateOrigin = this.updateOrigin.bind(this);
     this.updateDestination = this.updateDestination.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.updateDate = this.updateDate.bind(this);
   }
 
   getLocation(){
@@ -39,21 +42,28 @@ class Root extends React.Component {
     this.setState({destinationCode: e.currentTarget.value });
   }
 
+  updateDate(e){
+    e.preventDefault();
+    this.setState({searchDate: e.currentTarget.value });
+  }
+
   handleSubmit(e){
     e.preventDefault();
     $.ajax({
       method: "GET",
-      url: `/api/flights?origin=${this.state.originCode}&dest=${this.state.destinationCode}`,
+      url: `/api/flights?origin=${this.state.originCode}&dest=${this.state.destinationCode}&date=${this.state.searchDate}`,
       success: (response) => {
-        this.setState({originCode: response.IATA, searchMessage:"Your closest airport has been found!"});
+        console.log('good');
       },
-      error: function (err){
-        this.setState({searchMessage:"There was an error finding your closest airport!"});
+      error: (err) => {
+        console.log(err);
+        this.setState({searchMessage:err.responseText});
       }
     });
   }
 
   render() {
+    console.log(this.state);
     return(
       <div>
         <button onClick={ this.getLocation }>Use current location</button>
@@ -63,6 +73,7 @@ class Root extends React.Component {
           <input name="origin" id="origin" onChange={ this.updateOrigin } value={ this.state.originCode }/>
           <label htmlFor="destination">Destination:</label>
           <input name="destination" id="destination" onChange={ this.updateDestination }/>
+          <input type="date" onChange={ this.updateDate } value= { this.state.searchDate }></input>
           <button type="submit">Find Flights</button>
         </form>
       </div>
