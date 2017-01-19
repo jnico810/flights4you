@@ -21537,7 +21537,7 @@
 	
 	    var rightNow = new Date();
 	    var formattedDate = rightNow.toISOString().slice(0, 10);
-	    _this.state = { originCode: "", destinationCode: "", searchMessage: "", searchDate: formattedDate, flights: null };
+	    _this.state = { originCode: "", destinationCode: "", searchMessage: "", searchDate: formattedDate, flights: [] };
 	    _this.getAirportCode = _this.getAirportCode.bind(_this);
 	    _this.getLocation = _this.getLocation.bind(_this);
 	    _this.updateOrigin = _this.updateOrigin.bind(_this);
@@ -21597,7 +21597,7 @@
 	        url: '/api/flights?origin=' + this.state.originCode + '&dest=' + this.state.destinationCode + '&date=' + this.state.searchDate,
 	        success: function success(response) {
 	          console.log('good response');
-	          _this3.parseFlights(response);
+	          _this3.setState({ flights: response });
 	        },
 	        error: function error(err) {
 	          console.log(err);
@@ -21606,29 +21606,42 @@
 	      });
 	    }
 	  }, {
-	    key: 'parseFlights',
-	    value: function parseFlights(flights) {
-	      var flightList = [];
-	      this.setState({ flights: flights });
-	      debugger;
-	      flights.trips.tripOption.forEach(function (trip) {
-	        console.log(trip);
-	        var string = "";
-	        trip.slice.forEach(function (slice) {
-	          slice.segment.forEach(function (segment) {
-	            segment.leg[0];
-	            var departureTime = new Date(segment[0].departureTime).toLocaleTimeString().slice(0, -6);
-	
-	            string = string + (' ' + departureTime + '  ' + leg.origin);
-	          });
-	        });
-	      });
-	    }
-	  }, {
 	    key: 'render',
 	    value: function render() {
 	      window.state = this.state;
 	      console.log(this.state);
+	
+	      var flightList = this.state.flights.map(function (flight, idx) {
+	        var flightLegs = [];
+	        for (var i = 0; i <= flight.connections; i++) {
+	          flightLegs.push(_react2.default.createElement(
+	            'li',
+	            null,
+	            flight.origins[i].iata,
+	            ' : ',
+	            flight.departureTimes[i],
+	            ' -- ',
+	            flight.destinations[i].iata,
+	            ' : ',
+	            flight.arrivalTimes[i]
+	          ));
+	        }
+	        return _react2.default.createElement(
+	          'div',
+	          null,
+	          _react2.default.createElement(
+	            'h2',
+	            null,
+	            'Price: ',
+	            flight.totalPrice
+	          ),
+	          _react2.default.createElement(
+	            'ul',
+	            null,
+	            flightLegs
+	          )
+	        );
+	      });
 	      return _react2.default.createElement(
 	        'div',
 	        null,
@@ -21663,7 +21676,8 @@
 	            { type: 'submit' },
 	            'Find Flights'
 	          )
-	        )
+	        ),
+	        flightList
 	      );
 	    }
 	  }]);

@@ -7,7 +7,7 @@ class Root extends React.Component {
     super(props);
     const rightNow = new Date();
     const formattedDate = rightNow.toISOString().slice(0,10);
-    this.state = {originCode:"", destinationCode:"", searchMessage:"", searchDate:formattedDate, flights:null};
+    this.state = {originCode:"", destinationCode:"", searchMessage:"", searchDate:formattedDate, flights:[]};
     this.getAirportCode = this.getAirportCode.bind(this);
     this.getLocation = this.getLocation.bind(this);
     this.updateOrigin = this.updateOrigin.bind(this);
@@ -55,7 +55,7 @@ class Root extends React.Component {
       url: `/api/flights?origin=${this.state.originCode}&dest=${this.state.destinationCode}&date=${this.state.searchDate}`,
       success: (response) => {
         console.log('good response');
-        this.parseFlights(response);
+        this.setState({flights: response});
       },
       error: (err) => {
         console.log(err);
@@ -64,27 +64,22 @@ class Root extends React.Component {
     });
   }
 
-  parseFlights(flights){
-    let flightList = [];
-    this.setState({flights:flights});
-    debugger
-    flights.trips.tripOption.forEach((trip) => {
-      console.log(trip);
-      let string = "";
-      trip.slice.forEach((slice) => {
-        slice.segment.forEach((segment) => {
-            segment.leg[0]
-            const departureTime = new Date(segment[0].departureTime).toLocaleTimeString().slice(0,-6);
-
-            string = string + ` ${departureTime}  ${leg.origin}`;
-        });
-      });
-    });
-  }
-
   render() {
     window.state = this.state;
     console.log(this.state);
+
+    let flightList = this.state.flights.map((flight, idx)=>{
+      let flightLegs = [];
+      for (let i = 0; i <= flight.connections; i++){
+        flightLegs.push(<li>{ flight.origins[i].iata } : { flight.departureTimes[i] } -- { flight.destinations[i].iata } : { flight.arrivalTimes[i] }</li>);
+      }
+      return (
+        <div>
+          <h2>Price: { flight.totalPrice }</h2>
+          <ul>{flightLegs}</ul>
+        </div>)
+      ;
+    });
     return(
       <div>
         <button onClick={ this.getLocation }>Use current location</button>
@@ -97,6 +92,7 @@ class Root extends React.Component {
           <input type="date" onChange={ this.updateDate } value= { this.state.searchDate }></input>
           <button type="submit">Find Flights</button>
         </form>
+        { flightList }
       </div>
     );
   }
