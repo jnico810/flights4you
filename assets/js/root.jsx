@@ -7,13 +7,14 @@ class Root extends React.Component {
     super(props);
     const rightNow = new Date();
     const formattedDate = rightNow.toISOString().slice(0,10);
-    this.state = {originCode:"", destinationCode:"", searchMessage:"", searchDate:formattedDate};
+    this.state = {originCode:"", destinationCode:"", searchMessage:"", searchDate:formattedDate, flights:null};
     this.getAirportCode = this.getAirportCode.bind(this);
     this.getLocation = this.getLocation.bind(this);
     this.updateOrigin = this.updateOrigin.bind(this);
     this.updateDestination = this.updateDestination.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.updateDate = this.updateDate.bind(this);
+
   }
 
   getLocation(){
@@ -53,7 +54,8 @@ class Root extends React.Component {
       method: "GET",
       url: `/api/flights?origin=${this.state.originCode}&dest=${this.state.destinationCode}&date=${this.state.searchDate}`,
       success: (response) => {
-        console.log('good');
+        console.log('good response');
+        this.parseFlights(response);
       },
       error: (err) => {
         console.log(err);
@@ -62,7 +64,26 @@ class Root extends React.Component {
     });
   }
 
+  parseFlights(flights){
+    let flightList = [];
+    this.setState({flights:flights});
+    debugger
+    flights.trips.tripOption.forEach((trip) => {
+      console.log(trip);
+      let string = "";
+      trip.slice.forEach((slice) => {
+        slice.segment.forEach((segment) => {
+            segment.leg[0]
+            const departureTime = new Date(segment[0].departureTime).toLocaleTimeString().slice(0,-6);
+
+            string = string + ` ${departureTime}  ${leg.origin}`;
+        });
+      });
+    });
+  }
+
   render() {
+    window.state = this.state;
     console.log(this.state);
     return(
       <div>

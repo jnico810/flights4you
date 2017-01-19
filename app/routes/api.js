@@ -74,8 +74,7 @@ module.exports = function(app, passport) {
           console.log('error');
           res.status(400).send("There was an issue finding your flights!");
         }
-        console.log('Upload successful!  Server responded with:', body);
-        res.status(200).send(JSON.parse(body));
+        res.status(200).send(body);
       });
     } else{
       console.log('error');
