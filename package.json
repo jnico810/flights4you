@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "gulp": "gulp"
   },
   "keywords": [],
   "author": "",
@@ -18,11 +19,27 @@
     "babel-preset-react": "^6.16.0",
     "body-parser": "^1.16.0",
     "express": "^4.14.0",
+    "gulp": "^3.8.10",
+    "gulp-autoprefixer": "^2.1.0",
+    "gulp-concat": "^2.4.3",
+    "gulp-cssmin": "^0.1.6",
+    "gulp-jshint": "^1.9.2",
+    "gulp-less": "^3.0.1",
+    "gulp-load-plugins": "^0.8.0",
+    "gulp-plumber": "^0.6.6",
+    "gulp-rename": "^1.2.0",
+    "gulp-uglify": "^1.1.0",
+    "gulp-util": "^3.0.3",
     "jquery": "^3.1.1",
     "morgan": "^1.7.0",
+    "passport": "^0.3.2",
+    "passport-facebook": "^2.1.1",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "request": "^2.79.0",
     "webpack": "^1.14.0"
+  },
+  "devDependencies": {
+    "gulp-livereload": "^3.8.1"
   }
 }

@@ -21535,22 +21535,30 @@
 	
 	    var _this = _possibleConstructorReturn(this, (Root.__proto__ || Object.getPrototypeOf(Root)).call(this, props));
 	
-	    _this.state = { originCode: "", desintationCode: "", searchMessage: "" };
+	    _this.state = { originCode: "", destinationCode: "", searchMessage: "" };
 	    _this.getAirportCode = _this.getAirportCode.bind(_this);
+	    _this.getLocation = _this.getLocation.bind(_this);
+	    _this.updateOrigin = _this.updateOrigin.bind(_this);
+	    _this.updateDestination = _this.updateDestination.bind(_this);
+	    _this.handleSubmit = _this.handleSubmit.bind(_this);
 	    return _this;
 	  }
 	
 	  _createClass(Root, [{
+	    key: 'getLocation',
+	    value: function getLocation() {
+	      this.setState({ searchMessage: "Searching for closest airport..." });
+	      navigator.geolocation.getCurrentPosition(this.getAirportCode);
+	    }
+	  }, {
 	    key: 'getAirportCode',
 	    value: function getAirportCode(position) {
 	      var _this2 = this;
 	
-	      this.setState({ searchMessage: "Searching for closest airport..." });
 	      _jquery2.default.ajax({
 	        method: "GET",
 	        url: '/api/closestAirport?lat=' + position.coords.latitude + '&lng=' + position.coords.longitude,
 	        success: function success(response) {
-	          _this2.setState({ searchMessage: "Searching current location..." });
 	          _this2.setState({ originCode: response.IATA, searchMessage: "Your closest airport has been found!" });
 	        },
 	        error: function error(err) {
@@ -21564,9 +21572,26 @@
 	      this.setState({ originCode: e.currentTarget.value });
 	    }
 	  }, {
-	    key: 'componentWillMount',
-	    value: function componentWillMount() {
-	      navigator.geolocation.getCurrentPosition(this.getAirportCode);
+	    key: 'updateDestination',
+	    value: function updateDestination(e) {
+	      this.setState({ destinationCode: e.currentTarget.value });
+	    }
+	  }, {
+	    key: 'handleSubmit',
+	    value: function handleSubmit(e) {
+	      var _this3 = this;
+	
+	      e.preventDefault();
+	      _jquery2.default.ajax({
+	        method: "GET",
+	        url: '/api/flights?origin=' + this.state.originCode + '&dest=' + this.state.destinationCode,
+	        success: function success(response) {
+	          _this3.setState({ originCode: response.IATA, searchMessage: "Your closest airport has been found!" });
+	        },
+	        error: function error(err) {
+	          this.setState({ searchMessage: "There was an error finding your closest airport!" });
+	        }
+	      });
 	    }
 	  }, {
 	    key: 'render',
@@ -21575,22 +21600,36 @@
 	        'div',
 	        null,
 	        _react2.default.createElement(
+	          'button',
+	          { onClick: this.getLocation },
+	          'Use current location'
+	        ),
+	        _react2.default.createElement(
 	          'p',
 	          null,
 	          this.state.searchMessage
 	        ),
 	        _react2.default.createElement(
-	          'label',
-	          { htmlFor: 'origin' },
-	          'Origin:'
-	        ),
-	        _react2.default.createElement('input', { name: 'origin', id: 'origin', onChange: this.updateOrigin, value: this.state.originCode }),
-	        _react2.default.createElement(
-	          'label',
-	          { htmlFor: 'destination' },
-	          'Destination:'
-	        ),
-	        _react2.default.createElement('input', { name: 'destination', id: 'destination' })
+	          'form',
+	          { onSubmit: this.handleSubmit },
+	          _react2.default.createElement(
+	            'label',
+	            { htmlFor: 'origin' },
+	            'Origin:'
+	          ),
+	          _react2.default.createElement('input', { name: 'origin', id: 'origin', onChange: this.updateOrigin, value: this.state.originCode }),
+	          _react2.default.createElement(
+	            'label',
+	            { htmlFor: 'destination' },
+	            'Destination:'
+	          ),
+	          _react2.default.createElement('input', { name: 'destination', id: 'destination', onChange: this.updateDestination }),
+	          _react2.default.createElement(
+	            'button',
+	            { type: 'submit' },
+	            'Find Flights'
+	          )
+	        )
 	      );
 	    }
 	  }]);
