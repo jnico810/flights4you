@@ -1,6 +1,6 @@
 // Module for API Routes (serving JSON)
 
-module.exports = function(app, passport) {
+module.exports = function(app) {
   const bodyParser = require('body-parser');
   const request = require('request');
 
@@ -14,28 +14,11 @@ module.exports = function(app, passport) {
     });
 	});
 
-  app.get('/auth/facebook', passport.authenticate('facebook'));
-
-  app.get('/auth/facebook/callback',
-    passport.authenticate('facebook', { failureRedirect: '/' }),
-    function(req, res) {
-      res.redirect('/');
-    });
-
   const parseFlights = (body) => {
     let flights = [];
     body.trips.tripOption.forEach((trip)=> {
       let flight = { totalPrice: trip.saleTotal, totalDuration: trip.slice[0].duration };
       trip.slice.forEach( (slice) => {
-
-        const firstSegment = slice.segment[0];
-        const lastSegment = slice.segment[slice.segment.length - 1];
-
-        const firstLeg = firstSegment.leg[0];
-        const lastLeg = lastSegment.leg[0];
-
-        const departureTime = new Date(firstLeg.departureTime).toLocaleTimeString().slice(0,-6);
-        const arrivalTime = new Date(lastLeg.arrivalTime).toLocaleTimeString().slice(0,-6);
 
         let origins = [];
         let destinations = [];
@@ -44,20 +27,22 @@ module.exports = function(app, passport) {
         let arrivalTimes = [];
 
         slice.segment.forEach((segment) => {
-          const leg = segment.leg[0];
-          const departureTime = new Date(leg.departureTime).toLocaleTimeString().slice(0,-6);
-          const arrivalTime = new Date(leg.arrivalTime).toLocaleTimeString().slice(0,-6);
-          departureTimes.push(departureTime);
-          arrivalTimes.push(arrivalTime);
-          origins.push({ iata: leg.origin, terminal: leg.originTerminal, duration: leg.duration });
-          destinations.push({ iata: leg.destination, terminal: leg.destinationTerminal });
+          const flight = segment.flight;
+          segment.leg.forEach((leg) => {
+            const departureTime = new Date(leg.departureTime).toLocaleTimeString();
+            const arrivalTime = new Date(leg.arrivalTime).toLocaleTimeString();
+            departureTimes.push(departureTime);
+            arrivalTimes.push(arrivalTime);
+            origins.push({ iata: leg.origin, terminal: leg.originTerminal, duration: leg.duration, flight: flight });
+            destinations.push({ iata: leg.destination, terminal: leg.destinationTerminal });
+          });
         });
 
         flight.departureTimes = departureTimes;
         flight.arrivalTimes = arrivalTimes;
         flight.origins = origins;
         flight.destinations = destinations;
-        flight.connections = slice.segment.length - 1;
+        flight.connections = origins.length - 1;
       });
       flights.push(flight);
     });
@@ -69,12 +54,10 @@ module.exports = function(app, passport) {
     const origin = req.query.origin;
     const dest = req.query.dest;
     let date = req.query.date;
-
     if (!date){
       const rightNow = new Date();
       date = rightNow.toISOString().slice(0,10).replace(/-/g,"-");
     }
-
     const requestData = {
       request: {
         slice: [
@@ -91,27 +74,27 @@ module.exports = function(app, passport) {
           childCount: 0,
           seniorCount: 0
         },
-        solutions: 2,
+        solutions: 10,
         refundable: false
       }
     };
-
-    const url = "https://www.googleapis.com/qpxExpress/v1/trips/search?key=AIzaSyAhLrGr_pB9LfaCyZB-t996vIu59Lz5BN4";
-
+    const url = "https://www.googleapis.com/qpxExpress/v1/trips/search?key=AIzaSyBGEWdCRS271v9FklxQprp2LNpzdOK2Ins";
     if (origin && dest && date){
       request({
         url: url,
         method: "POST",
         json: requestData
         }, (err, response, body) => {
-        if (err) {
+        if (err || body.error) {
+          res.status(400).send("There was an issue finding your flights!");
+        } else if (body.trips.tripOption){
+          res.status(200).send(parseFlights(body));
+        } else{
           res.status(400).send("There was an issue finding your flights!");
         }
-        res.status(200).send(parseFlights(body));
       });
     } else{
-      res.status(400).send("There was an issue finding your flights!");
+      res.status(400).send("Make sure to fill in all fields!");
     }
-
   });
 };
