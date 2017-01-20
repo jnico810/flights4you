@@ -4,8 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "gulp": "gulp"
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
