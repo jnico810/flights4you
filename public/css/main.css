@@ -3,14 +3,14 @@ p, form, input, div, ul, h3, main {
   padding:0;
 }
 
+body {
+  font: 18px Tahoma, sans-serif;
+}
+
 main {
   display: flex;
   flex-direction: column;
   text-align: center;
-}
-
-body {
-  font: 18px Tahoma, sans-serif;
 }
 
 h3 {

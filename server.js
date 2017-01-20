@@ -13,7 +13,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 require('./app/routes/api')(app);
 require('./app/routes/routes')(app);
 
-
 const port = process.env.PORT || 3000;
 
 http.listen(port, function(){

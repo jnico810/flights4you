@@ -54,7 +54,7 @@ class Root extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
     const url = `/api/flights?origin=${this.state.originCode}&dest=${this.state.destinationCode}&date=${this.state.searchDate}`;
-    
+
     if (this.state.facebook) {
       this.setState({searchMessage: "Searching for flights..."});
       $.ajax({
@@ -136,7 +136,5 @@ class Root extends React.Component {
   }
 
 }
-
-
 
 export default Root;
