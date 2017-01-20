@@ -100,7 +100,7 @@ class Root extends React.Component {
     if (!this.state.facebook || this.state.facebook.status == "unknown") {
       facebookButton = (
         <FacebookLogin
-          appId="1147962611987399"
+          appId="1149114938538833"
           autoLoad={false}
           fields="name, picture"
           cssClass="facebook-login"
