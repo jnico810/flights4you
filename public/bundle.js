@@ -21633,7 +21633,7 @@
 	        for (var i = 0; i <= flight.connections; i++) {
 	          flightLegs.push(_react2.default.createElement(
 	            'li',
-	            null,
+	            { key: i },
 	            _react2.default.createElement(
 	              'strong',
 	              null,
@@ -21655,7 +21655,7 @@
 	        }
 	        return _react2.default.createElement(
 	          'div',
-	          { className: 'flight' },
+	          { key: idx, className: 'flight' },
 	          _react2.default.createElement(
 	            'h3',
 	            null,

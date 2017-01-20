@@ -84,12 +84,12 @@ class Root extends React.Component {
     const flightList = this.state.flights.map((flight, idx)=> {
       let flightLegs = [];
       for (let i = 0; i <= flight.connections; i++){
-        flightLegs.push(<li><strong>{flight.origins[i].flight.carrier}{flight.origins[i].flight.number}</strong>: { flight.origins[i].iata }:{ flight.departureTimes[i] } --{">"} { flight.destinations[i].iata }:{ flight.arrivalTimes[i] } </li>);
+        flightLegs.push(<li key={i}><strong>{flight.origins[i].flight.carrier}{flight.origins[i].flight.number}</strong>: { flight.origins[i].iata }:{ flight.departureTimes[i] } --{">"} { flight.destinations[i].iata }:{ flight.arrivalTimes[i] } </li>);
       }
       return (
-        <div className="flight">
+        <div key={idx} className="flight">
           <h3>Price: { flight.totalPrice }</h3>
-          <ul>{flightLegs}</ul>
+          <ul>{ flightLegs }</ul>
         </div>
       );
     });
