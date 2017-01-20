@@ -21548,7 +21548,6 @@
 	    _this.updateDestination = _this.updateDestination.bind(_this);
 	    _this.handleSubmit = _this.handleSubmit.bind(_this);
 	    _this.updateDate = _this.updateDate.bind(_this);
-	
 	    return _this;
 	  }
 	
@@ -21577,11 +21576,13 @@
 	  }, {
 	    key: 'updateOrigin',
 	    value: function updateOrigin(e) {
+	      e.preventDefault();
 	      this.setState({ originCode: e.currentTarget.value });
 	    }
 	  }, {
 	    key: 'updateDestination',
 	    value: function updateDestination(e) {
+	      e.preventDefault();
 	      this.setState({ destinationCode: e.currentTarget.value });
 	    }
 	  }, {
@@ -21596,12 +21597,13 @@
 	      var _this3 = this;
 	
 	      e.preventDefault();
+	      var url = '/api/flights?origin=' + this.state.originCode + '&dest=' + this.state.destinationCode + '&date=' + this.state.searchDate;
 	
 	      if (this.state.facebook) {
 	        this.setState({ searchMessage: "Searching for flights..." });
 	        _jquery2.default.ajax({
 	          method: "GET",
-	          url: '/api/flights?origin=' + this.state.originCode + '&dest=' + this.state.destinationCode + '&date=' + this.state.searchDate,
+	          url: url,
 	          success: function success(response) {
 	            _this3.setState({ flights: response, searchMessage: "Your flights have been found!" });
 	          },
@@ -21626,9 +21628,6 @@
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      window.state = this.state;
-	      console.log(this.state);
-	
 	      var flightList = this.state.flights.map(function (flight, idx) {
 	        var flightLegs = [];
 	        for (var i = 0; i <= flight.connections; i++) {

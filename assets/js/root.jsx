@@ -5,7 +5,7 @@ import FacebookLogin from 'react-facebook-login';
 
 class Root extends React.Component {
 
-  constructor(props){
+  constructor(props) {
     super(props);
     const rightNow = new Date();
     const formattedDate = rightNow.toISOString().slice(0,10);
@@ -16,10 +16,9 @@ class Root extends React.Component {
     this.updateDestination = this.updateDestination.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.updateDate = this.updateDate.bind(this);
-
   }
 
-  getLocation(){
+  getLocation() {
     this.setState({searchMessage:"Searching for closest airport..."});
     navigator.geolocation.getCurrentPosition(this.getAirportCode);
   }
@@ -37,27 +36,30 @@ class Root extends React.Component {
     });
   }
 
-  updateOrigin(e){
+  updateOrigin(e) {
+    e.preventDefault();
     this.setState({originCode: e.currentTarget.value });
   }
 
-  updateDestination(e){
+  updateDestination(e) {
+    e.preventDefault();
     this.setState({destinationCode: e.currentTarget.value });
   }
 
-  updateDate(e){
+  updateDate(e) {
     e.preventDefault();
     this.setState({searchDate: e.currentTarget.value });
   }
 
-  handleSubmit(e){
+  handleSubmit(e) {
     e.preventDefault();
-
-    if (this.state.facebook){
+    const url = `/api/flights?origin=${this.state.originCode}&dest=${this.state.destinationCode}&date=${this.state.searchDate}`;
+    
+    if (this.state.facebook) {
       this.setState({searchMessage: "Searching for flights..."});
       $.ajax({
         method: "GET",
-        url: `/api/flights?origin=${this.state.originCode}&dest=${this.state.destinationCode}&date=${this.state.searchDate}`,
+        url: url,
         success: (response) => {
           this.setState({flights: response, searchMessage: "Your flights have been found!"});
         },
@@ -68,22 +70,18 @@ class Root extends React.Component {
     } else {
       this.setState({searchMessage:"Please login to facebook to search!"});
     }
-
   }
 
-  componentWillMount(){
+  componentWillMount() {
     this.getLocation();
   }
 
-  responseFacebook(response){
+  responseFacebook(response) {
     this.setState({facebook:response});
   }
 
   render() {
-    window.state = this.state;
-    console.log(this.state);
-
-    let flightList = this.state.flights.map((flight, idx)=>{
+    const flightList = this.state.flights.map((flight, idx)=> {
       let flightLegs = [];
       for (let i = 0; i <= flight.connections; i++){
         flightLegs.push(<li><strong>{flight.origins[i].flight.carrier}{flight.origins[i].flight.number}</strong>: { flight.origins[i].iata }:{ flight.departureTimes[i] } --{">"} { flight.destinations[i].iata }:{ flight.arrivalTimes[i] } </li>);
@@ -99,7 +97,7 @@ class Root extends React.Component {
     let facebookButton;
     let greeting;
 
-    if (!this.state.facebook || this.state.facebook.status == "unknown"){
+    if (!this.state.facebook || this.state.facebook.status == "unknown") {
       facebookButton = (
         <FacebookLogin
           appId="1147962611987399"
@@ -121,12 +119,12 @@ class Root extends React.Component {
       <main>
         { greeting }
         <p>{ this.state.searchMessage }</p>
-        <form onSubmit={ this.handleSubmit} >
+        <form onSubmit={ this.handleSubmit}>
           <label htmlFor="origin">Origin:</label>
           <input name="origin" id="origin" onChange={ this.updateOrigin } value={ this.state.originCode }/>
           <label htmlFor="destination">Destination:</label>
           <input name="destination" id="destination" onChange={ this.updateDestination } value={ this.state.destinationCode }/>
-          <input type="date" onChange={ this.updateDate } value= { this.state.searchDate }></input>
+          <input type="date" onChange={ this.updateDate } value={ this.state.searchDate }></input>
           <button type="submit">Find Flights</button>
         </form>
         <div className="flights">
