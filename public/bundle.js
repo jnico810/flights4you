@@ -21675,7 +21675,7 @@
 	
 	      if (!this.state.facebook || this.state.facebook.status == "unknown") {
 	        facebookButton = _react2.default.createElement(_reactFacebookLogin2.default, {
-	          appId: '1147962611987399',
+	          appId: '621758604697713',
 	          autoLoad: false,
 	          fields: 'name, picture',
 	          cssClass: 'facebook-login',
@@ -21694,7 +21694,6 @@
 	          _react2.default.createElement('img', { src: this.state.facebook.picture.data.url })
 	        );
 	      }
-	
 	      return _react2.default.createElement(
 	        'main',
 	        null,
